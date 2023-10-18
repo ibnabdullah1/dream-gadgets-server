@@ -30,18 +30,57 @@ async function run() {
     await client.connect();
     const database = client.db("gadgetDB");
     const gadgetCollection = database.collection("gadgets");
+    const cartDatabase = client.db("gadgetDB");
+    const cartCollection = cartDatabase.collection("cart");
+
+    app.get("/cart", async (req, res) => {
+      const cursor = cartCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
 
     app.get("/product", async (req, res) => {
       const cursor = gadgetCollection.find();
       const result = await cursor.toArray();
       res.send(result);
     });
+
+    // get apple products
+    app.get("/apple", async (req, res) => {
+      const cursor = gadgetCollection.find({ brand: "Apple" });
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    // get lenovo products
+    app.get("/lenovo", async (req, res) => {
+      const cursor = gadgetCollection.find({ brand: "Lenovo" });
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+    // get vivo products
+    app.get("/vivo", async (req, res) => {
+      const cursor = gadgetCollection.find({ brand: "Vivo" });
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
     app.post("/product", async (req, res) => {
       const newProduct = req.body;
       console.log(newProduct);
       const result = await gadgetCollection.insertOne(newProduct);
       res.send(result);
     });
+
+    // cart api
+    //user related api
+    app.post("/cart", async (req, res) => {
+      const newCart = req.body;
+      console.log(newCart);
+      const result = await cartCollection.insertOne(newCart);
+      res.send(result);
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
