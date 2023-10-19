@@ -27,7 +27,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    // await client.connect();
+    await client.connect();
     const database = client.db("gadgetDB");
     const gadgetCollection = database.collection("gadgets");
     const cartDatabase = client.db("gadgetDB");
@@ -36,6 +36,41 @@ async function run() {
     app.get("/cart", async (req, res) => {
       const cursor = cartCollection.find();
       const result = await cursor.toArray();
+      res.send(result);
+    });
+    app.get("/cart/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await cartCollection.findOne(query);
+      res.send(result);
+    });
+
+    // user cart update
+    app.put("/cart/:id", async (req, res) => {
+      const id = req.params.id;
+      const updatedCart = req.body;
+      const query = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const UpdateCart = {
+        $set: {
+          ProductName: updatedCart.ProductName,
+          brand: updatedCart.brand,
+          description: updatedCart.description,
+          taste: updatedCart._id,
+          price: updatedCart.price,
+          img: updatedCart.img,
+          rating: updatedCart.rating,
+        },
+      };
+      console.log(updatedCart);
+      const result = await cartCollection.updateOne(query, UpdateCart, options);
+      res.send(result);
+    });
+
+    app.delete("/cart/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await cartCollection.deleteOne(query);
       res.send(result);
     });
 
@@ -96,7 +131,6 @@ async function run() {
       res.send(result);
     });
 
-    /// HP (Hewlett-Packard)
     //hp get laptop api
     app.get("/hp", async (req, res) => {
       const cursor = gadgetCollection.find({ brand: "HP (Hewlett-Packard)" });
@@ -110,6 +144,19 @@ async function run() {
       res.send(result);
     });
 
+    //canon product get from mongoDb database
+    app.get("/canon", async (req, res) => {
+      const cursor = gadgetCollection.find({ brand: "Canon" });
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+    app.get("/canon/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await gadgetCollection.findOne(query);
+      res.send(result);
+    });
+
     app.post("/product", async (req, res) => {
       const newProduct = req.body;
       console.log(newProduct);
@@ -117,8 +164,7 @@ async function run() {
       res.send(result);
     });
 
-    // cart api
-    //user related api
+    //cart related api
     app.post("/cart", async (req, res) => {
       const newCart = req.body;
       console.log(newCart);
