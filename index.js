@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 const app = express();
 const port = process.env.PORT || 5000;
@@ -27,7 +27,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
     const database = client.db("gadgetDB");
     const gadgetCollection = database.collection("gadgets");
     const cartDatabase = client.db("gadgetDB");
@@ -51,6 +51,12 @@ async function run() {
       const result = await cursor.toArray();
       res.send(result);
     });
+    app.get("/apple/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await gadgetCollection.findOne(query);
+      res.send(result);
+    });
 
     // get lenovo products
     app.get("/lenovo", async (req, res) => {
@@ -58,10 +64,49 @@ async function run() {
       const result = await cursor.toArray();
       res.send(result);
     });
+    app.get("/lenovo/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await gadgetCollection.findOne(query);
+      res.send(result);
+    });
     // get vivo products
     app.get("/vivo", async (req, res) => {
       const cursor = gadgetCollection.find({ brand: "Vivo" });
       const result = await cursor.toArray();
+      res.send(result);
+    });
+    app.get("/vivo/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await gadgetCollection.findOne(query);
+      res.send(result);
+    });
+
+    // samsung product api
+    app.get("/samsung", async (req, res) => {
+      const cursor = gadgetCollection.find({ brand: "Samsung" });
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+    app.get("/samsung/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await gadgetCollection.findOne(query);
+      res.send(result);
+    });
+
+    /// HP (Hewlett-Packard)
+    //hp get laptop api
+    app.get("/hp", async (req, res) => {
+      const cursor = gadgetCollection.find({ brand: "HP (Hewlett-Packard)" });
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+    app.get("/hp/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await gadgetCollection.findOne(query);
       res.send(result);
     });
 
