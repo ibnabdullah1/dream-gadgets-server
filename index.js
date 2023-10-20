@@ -74,12 +74,6 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/product", async (req, res) => {
-      const cursor = gadgetCollection.find();
-      const result = await cursor.toArray();
-      res.send(result);
-    });
-
     // get apple products
     app.get("/apple", async (req, res) => {
       const cursor = gadgetCollection.find({ brand: "Apple" });
